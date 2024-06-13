@@ -1,6 +1,6 @@
 
 import config
-from data_operations.data_preprocesing import data_imputing, dataset_split, encode_features, read_data
+from data_operations.data_preprocesing import  data_imputing_categorical, data_imputing_numerical,  encode_features, read_data, split_data
 from models.model import evaluate_model, train_model
 
 
@@ -12,18 +12,26 @@ def main():
          
          if config.dataset == "uci_credit_approval":
             
-            filepath = "data/uci_credit_approval.csv"
-            _, X, y = read_data(filepath)
             
-            X_train, X_test, y_train, y_test = dataset_split(X, y, split=0.2)
-            X_train, X_test, y_train, y_test = data_imputing(X_train, X_test, y_train, y_test)
-            X_train, X_test = encode_features(X_train, X_test)
+            data= read_data(config.filepath)
+            x_train,y_train, x_test,  y_test = split_data(data)
             
-            # Train Random Forest model
-            model = train_model(X_train, y_train)
-            accuracy, report = evaluate_model(model, X_test, y_test)
-            print(f"Random Forest Model Accuracy: {accuracy}")
-            print(f"Random Forest Model Report:\n{report}")
+            x_train, y_train, x_test, y_test = data_imputing_categorical(x_train, y_train ,x_test, y_test)
+            x_train, y_train, x_test, y_test = data_imputing_numerical(x_train,y_train, x_test,  y_test)
+            
+            
+            x_train, x_test = encode_features(x_train, x_test)
+            
+        
+            print(f"x_train shape: {x_train.shape}")
+            print(f"y_train shape: {y_train.shape}")
+            print(f"x_test shape: {x_test.shape}")
+            print(f"y_test shape: {y_test.shape}")
+            
+            model = train_model(x_train, y_train, x_test, y_test)
+            #accuracy, report = evaluate_model(model, x_test, y_test)
+            #print(f"Random Forest Model Accuracy: {accuracy}")
+            #print(f"Random Forest Model Report:\n{report}")
             
           
             
