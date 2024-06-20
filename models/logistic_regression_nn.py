@@ -1,4 +1,5 @@
 import copy
+from distutils import config
 from data_operations.helper_functions import sigmoid
 import numpy as np
 
@@ -12,9 +13,8 @@ class LogisticRegression():
         z = np.dot(w.T, X) + b
         A = sigmoid(z)
         
-        #cost = - (1 / m) * np.sum(Y * np.log(A) + (1 - Y) * np.log(1 - A))
-        
-        epsilon = 0.00001
+       
+        epsilon = 1e-8
         cost = - (1 / m) * np.sum(Y * np.log(A + epsilon) + (1 - Y) * np.log(1 - A + epsilon))
         
         dz = A - Y
@@ -79,18 +79,18 @@ class LogisticRegression():
         
         A = sigmoid(np.dot(w.T, X)+b)
         
-       
+    
         for i in range(A.shape[1]):
             if A[0, i] > 0.5:
                 Y_prediction[0 ,i] = 1
             else:
                 Y_prediction[0,i] = 0
             
-    
+            
         return Y_prediction
     
     
-    def model(self, X_train, Y_train, X_test, Y_test, num_iterations=2000, learning_rate=0.5, print_cost=False):
+    def model(self, X_train, Y_train, X_test, Y_test, num_iterations=2000, learning_rate=0.1, print_cost=False):
         
         
         w, b = np.zeros((X_train.shape[0], 1)), 0.0

@@ -3,42 +3,33 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
-
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
 
 def read_data(datadir):
     
-    data=pd.read_csv(datadir)
+    data=pd.read_csv(datadir, low_memory=False)
     return data
   
   
-  
-"""   
 
 def split_data(data):
     
-
-    split = int(len(data) * config.split_ratio)
-    
-    train_data = data[:split]
-    test_data = data[split:]
-    
-    if config.dataset == "uci_credit_approval":
-        x_train = train_data.drop('A16', axis=1)
-        y_train = train_data[['A16']]
-        x_test = test_data.drop('A16', axis=1)
-        y_test = test_data[['A16']]
-    
-    return x_train, y_train, x_test, y_test   
-"""  
-
-
-def split_data(data):
     if config.dataset == "uci_credit_approval":
         X = data.drop('A16', axis=1)
         y = data[['A16']]
         
-        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=1 - config.split_ratio, random_state=42)
+    elif config.dataset == "statlog_german_credit_data":
+        X = data.drop('class', axis=1)
+        y = data[['class']]
+        
+ 
+        
+        
+    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=1-config.split_ratio, random_state=42)
+    
+    if config.dataset == "statlog_german_credit_data":
+       y_train = (y_train == 2).astype(int)
+       y_test = (y_test == 2).astype(int)
     
     return x_train, y_train, x_test, y_test
         
@@ -60,6 +51,9 @@ def data_imputing_numerical(X_train, y_train, X_test, y_test):
             X_test[var].fillna(deger, inplace=True)
         
     return X_train, y_train, X_test, y_test
+
+
+
 
 def data_imputing_categorical(X_train, y_train, X_test, y_test):
     cat_val = X_train.select_dtypes(exclude=[np.float64, np.int64]).columns
@@ -87,17 +81,25 @@ def encode_features(X_train, X_test):
     X_train_encoded = encoder.transform(X_train[cat_vars])
     X_test_encoded = encoder.transform(X_test[cat_vars])
 
-    # Drop original categorical columns and concatenate encoded features
     X_train = X_train.drop(cat_vars, axis=1).reset_index(drop=True)
     X_test = X_test.drop(cat_vars, axis=1).reset_index(drop=True)
 
     X_train = pd.concat([X_train, pd.DataFrame(X_train_encoded, columns=encoder.get_feature_names_out(cat_vars))], axis=1)
     X_test = pd.concat([X_test, pd.DataFrame(X_test_encoded, columns=encoder.get_feature_names_out(cat_vars))], axis=1)
-
+    
+    
     return X_train, X_test
     
     
     
+def standardize_features(X_train, X_test):
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+
+    X_train_scaled = scaler.transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    
+    return X_train_scaled, X_test_scaled
 
 
 
