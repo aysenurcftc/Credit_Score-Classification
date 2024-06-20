@@ -7,8 +7,7 @@ import numpy as np
 class LogisticRegression():
     
     def propagate(self, w, b, X, Y):
-      
-        
+    
         m = X.shape[1]
         z = np.dot(w.T, X) + b
         A = sigmoid(z)

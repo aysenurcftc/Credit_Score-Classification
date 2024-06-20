@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder, MinMaxScaler, StandardScaler
 
 def read_data(datadir):
     
@@ -22,9 +22,11 @@ def split_data(data):
         X = data.drop('class', axis=1)
         y = data[['class']]
         
- 
+    elif config.dataset == "loan":
+        X = data.drop(columns=["loan_status"], axis=1)
+        y = data["loan_status"].values
         
-        
+   
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=1-config.split_ratio, random_state=42)
     
     if config.dataset == "statlog_german_credit_data":
@@ -67,10 +69,24 @@ def data_imputing_categorical(X_train, y_train, X_test, y_test):
     if config.dataset == "uci_credit_approval":
         y_train.replace(to_replace={'+':1, '-':0}, inplace=True)
         y_test.replace(to_replace={'+':1, '-':0}, inplace=True)
-
+        
     return X_train, y_train, X_test, y_test
     
     
+    
+    
+def label_encoding(data):
+    
+    for col in data.select_dtypes(object):
+        data[col] = LabelEncoder().fit_transform(data[col])
+        
+    return data
+
+
+def min_max_scaler(X_train, X_test):
+    X_train = MinMaxScaler().fit_transform(X_train)
+    X_test = MinMaxScaler().fit_transform(X_test)
+    return X_train, X_test
 
 def encode_features(X_train, X_test):
     
