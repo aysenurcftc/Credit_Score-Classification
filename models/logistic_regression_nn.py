@@ -2,7 +2,7 @@ import copy
 from distutils import config
 from data_operations.helper_functions import sigmoid
 import numpy as np
-
+from sklearn.metrics import classification_report
 
 class LogisticRegression():
     
@@ -89,6 +89,12 @@ class LogisticRegression():
         return Y_prediction
     
     
+    def evaluate_model(self, Y_true, Y_pred):
+        report = classification_report(Y_true.T, Y_pred.T, output_dict=True)
+        return report
+    
+    
+    
     def model(self, X_train, Y_train, X_test, Y_test, num_iterations=2000, learning_rate=0.1, print_cost=False):
         
         
@@ -101,19 +107,27 @@ class LogisticRegression():
         Y_prediction_train = self.predict(w, b, X_train)
         Y_prediction_test = self.predict(w, b, X_test)
         
+        
+        train_report = self.evaluate_model(Y_train, Y_prediction_train)
+        test_report = self.evaluate_model(Y_test, Y_prediction_test)
+        
       
         if print_cost:
             print("train accuracy: {} %".format(100 - np.mean(np.abs(Y_prediction_train - Y_train)) * 100))
             print("test accuracy: {} %".format(100 - np.mean(np.abs(Y_prediction_test - Y_test)) * 100))
-
-        
+           
+           
+           
         d = {"costs": costs,
             "Y_prediction_test": Y_prediction_test, 
             "Y_prediction_train" : Y_prediction_train, 
             "w" : w, 
             "b" : b,
             "learning_rate" : learning_rate,
-            "num_iterations": num_iterations}
+            "num_iterations": num_iterations,
+            "train_report": train_report,
+            "test_report": test_report,
+            }
         
         return d
     

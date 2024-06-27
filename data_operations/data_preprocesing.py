@@ -4,6 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder, MinMaxScaler, StandardScaler
+from sklearn.preprocessing import KBinsDiscretizer
+
+
 
 def read_data(datadir):
     
@@ -25,6 +28,14 @@ def split_data(data):
     elif config.dataset == "loan":
         X = data.drop(columns=["loan_status"], axis=1)
         y = data["loan_status"].values
+        
+    elif config.dataset == "statlog_australian_credit_approval":
+        X=data.drop('A15', axis=1)
+        y=data[['A15']].values
+        
+    elif config.dataset == "default_of_credit_card_clients":
+        X=data.drop('Y', axis=1)
+        y=data[['Y']].values
         
    
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=1-config.split_ratio, random_state=42)
@@ -119,5 +130,20 @@ def standardize_features(X_train, X_test):
 
 
 
+def uniform_discretization_transform(data):
+    if config.dataset == "statlog_australian_credit_approval":
+        columns_to_discretize = ['A1', 'A2', 'A3', 'A7', 'A10', 'A13', 'A14']
+        data_to_discretize = data[columns_to_discretize]
 
+        # Perform a uniform discretization transform
+        trans = KBinsDiscretizer(n_bins=10, encode='ordinal', strategy='uniform')
+        data_dis = trans.fit_transform(data_to_discretize)
+
+        data_dis = pd.DataFrame(data_dis, columns=columns_to_discretize)
+        data[columns_to_discretize] = data_dis
+        
+        
+        return data
+    
+    
 

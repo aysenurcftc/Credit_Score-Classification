@@ -1,6 +1,7 @@
 import copy
 from data_operations.helper_functions import sigmoid
 import numpy as np
+from sklearn.metrics import classification_report
 
 
 class NnModel():
@@ -156,6 +157,23 @@ class NnModel():
 
                 
         return parameters
+    
+    
+    
+    def evaluate_model(self, parameters, X_train, Y_train, X_test, Y_test):
+        Y_pred_train = self.predict(parameters, X_train)
+        Y_pred_test = self.predict(parameters, X_test)
+        
+        train_report = classification_report(Y_train.T.flatten(), Y_pred_train.flatten(), zero_division=0)
+        test_report = classification_report(Y_test.T.flatten(), Y_pred_test.flatten(), zero_division=0)
+        
+        print("Train classification report:")
+        print(train_report)
+        
+        print("Test classification report:")
+        print(test_report)
+
+        return {"train_report": train_report, "test_report": test_report}
     
     
     
