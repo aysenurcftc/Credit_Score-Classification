@@ -61,6 +61,8 @@ class NnModel():
     
     def compute_cost(self, A2, Y):
        
+       
+        Y = np.array(Y)
         
         m = Y.shape[1] 
         logprobs = np.multiply(np.log(A2), Y) + np.multiply((1 - Y), np.log(1 - A2))

@@ -11,7 +11,6 @@ class LogisticRegression():
         m = X.shape[1]
         z = np.dot(w.T, X) + b
         A = sigmoid(z)
-        
        
         epsilon = 1e-8
         cost = - (1 / m) * np.sum(Y * np.log(A + epsilon) + (1 - Y) * np.log(1 - A + epsilon))
