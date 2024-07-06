@@ -8,6 +8,9 @@ from sklearn.metrics import accuracy_score
 import numpy as np
 from sklearn.utils import resample
 import argparse
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 
 def main(args):
    
@@ -122,6 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('--split_ratio', type=float, default=0.7, help="Train-test split ratio")
     parser.add_argument('--filepath', type=str, default="data/uci_credit_approval.csv", help="Path to the dataset file")
     
+    print(parser.print_help())
     args = parser.parse_args()
     main(args)
    

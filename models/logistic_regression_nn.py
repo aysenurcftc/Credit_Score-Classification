@@ -1,5 +1,5 @@
 import copy
-from distutils import config
+import config
 from data_operations.helper_functions import sigmoid
 import numpy as np
 from sklearn.metrics import classification_report

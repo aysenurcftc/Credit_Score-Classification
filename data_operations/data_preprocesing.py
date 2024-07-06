@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder, MinMaxScaler, StandardScaler
 from sklearn.preprocessing import KBinsDiscretizer
-
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 def read_data(datadir):
@@ -99,10 +100,12 @@ def min_max_scaler(X_train, X_test):
     X_test = MinMaxScaler().fit_transform(X_test)
     return X_train, X_test
 
+
+"""  
 def encode_features(X_train, X_test):
     
     cat_vars = X_train.select_dtypes(exclude=[np.float64, np.int64]).columns
-    encoder = OneHotEncoder(drop='first', sparse=False)
+    encoder = OneHotEncoder(drop='first')
     encoder.fit(X_train[cat_vars])
 
     X_train_encoded = encoder.transform(X_train[cat_vars])
@@ -116,7 +119,25 @@ def encode_features(X_train, X_test):
     
     
     return X_train, X_test
+   
+""" 
+
+def encode_features(X_train, X_test):
+    cat_vars = X_train.select_dtypes(exclude=[np.float64, np.int64]).columns
     
+    encoder = OneHotEncoder(drop='first')
+    encoder.fit(X_train[cat_vars])
+
+    X_train_encoded = encoder.transform(X_train[cat_vars])
+    X_test_encoded = encoder.transform(X_test[cat_vars])
+
+    X_train = X_train.drop(columns=cat_vars, axis=1)
+    X_test = X_test.drop(columns=cat_vars, axis=1)
+
+    X_train = pd.concat([X_train.reset_index(drop=True), pd.DataFrame(X_train_encoded.toarray(), columns=encoder.get_feature_names_out(cat_vars))], axis=1)
+    X_test = pd.concat([X_test.reset_index(drop=True), pd.DataFrame(X_test_encoded.toarray(), columns=encoder.get_feature_names_out(cat_vars))], axis=1)
+
+    return X_train, X_test 
     
     
 def standardize_features(X_train, X_test):
